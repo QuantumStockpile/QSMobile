@@ -7,14 +7,14 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
-    @GET("/qs/api-info")
+    @GET("/qsusers/api-info")
     suspend fun getApiInfo(): ApiInfo
 
-    @POST("/qs/users")
+    @POST("/qsusers/users")
     suspend fun createNewUser(@Body user: CreateUserRequest): CreatedUserResponse
 
     @FormUrlEncoded
-    @POST("/qs/token")
+    @POST("/qsusers/token")
     suspend fun login(
         @Field("grant_type") grantType: String = "password",
         @Field("username") username: String,

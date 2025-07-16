@@ -5,14 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.quantstock.qsmobile.api.*
+import com.quantstock.qsmobile.api.ApiService
+import com.quantstock.qsmobile.api.AuthInterceptor
 import com.quantstock.qsmobile.ui.navigation.LoginNavigation
 import com.quantstock.qsmobile.ui.screens.MainScreen
 import com.quantstock.qsmobile.ui.theme.QSMobileTheme
@@ -29,13 +32,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val apiService = remember { provideApiService(context) }
-            val authViewModel: AuthViewModel = viewModel(
-                factory = ViewModelProvider.AndroidViewModelFactory.getInstance(application)
-            )
-
-            val isLoggedIn = remember {
-                mutableStateOf(TokenStorage.getAccessToken(context) != null)
-            }
+            val authViewModel: AuthViewModel = viewModel()
 
             val token by authViewModel.token.collectAsState()
 
@@ -44,12 +41,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (isLoggedIn.value) {
-                        MainScreen(apiService, context)
+                    if (token != null) {
+                        MainScreen(apiService, context, authViewModel)
                     } else {
-                        LoginNavigation(apiService, context, onLoginSuccess = {
-                            isLoggedIn.value = true
-                        })
+                        LoginNavigation(apiService, context, authViewModel)
                     }
                 }
             }

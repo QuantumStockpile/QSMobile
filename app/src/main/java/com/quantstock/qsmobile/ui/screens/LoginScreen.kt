@@ -1,19 +1,33 @@
 package com.quantstock.qsmobile.ui.screens
 
 import android.content.Context
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.getString
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.quantstock.qsmobile.api.*
 import com.quantstock.qsmobile.R
+import com.quantstock.qsmobile.api.ApiService
 import com.quantstock.qsmobile.ui.common.PasswordTextField
+import com.quantstock.qsmobile.ui.navigation.items.LoginItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.LoginState
 
@@ -22,12 +36,11 @@ fun LoginScreen(
     apiService: ApiService,
     context: Context,
     navController: NavController,
-    onLoginSuccess: () -> Unit
+    authViewModel: AuthViewModel
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
-    val authViewModel: AuthViewModel = viewModel()
     val loginState by authViewModel.loginState.collectAsState()
     Box(
         modifier = Modifier
@@ -71,13 +84,6 @@ fun LoginScreen(
                 Text(text = getString(context, R.string.login))
             }
 
-            // When login succeeds
-            LaunchedEffect(loginState) {
-                if (loginState is LoginState.Success) {
-                    onLoginSuccess()
-                }
-            }
-
             if (loginState is LoginState.Error) {
                 Text(
                     text = (loginState as LoginState.Error).message,
@@ -90,7 +96,7 @@ fun LoginScreen(
             TextButton(
                 modifier = Modifier.padding(top = 6.dp),
                 onClick = {
-                    navController.navigate("register")
+                    navController.navigate(LoginItems.Register.route)
                 }) {
                 Text(text = getString(context, R.string.create_account))
             }

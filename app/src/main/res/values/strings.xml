@@ -5,6 +5,7 @@
     <string name="build_version">Build Version</string>
     <string name="create_account">Create a new account</string>
     <string name="login">Login</string>
+    <string name="logout">Logout</string>
     <string name="register">Register</string>
     <string name="username">Username</string>
     <string name="email">E-mail</string>
@@ -12,5 +13,7 @@
     <string name="show_password">Show password</string>
     <string name="hide_password">Hide password</string>
     <string name="account_created">Account created!</string>
+    <string name="login_failed">Login failed.</string>
     <string name="registration_failed">Registration failed.</string>
+    <string name="unknown_error">Unknown error occurred.</string>
 </resources>

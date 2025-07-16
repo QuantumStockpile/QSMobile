@@ -1,6 +1,5 @@
 package com.quantstock.qsmobile.scanner
 
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -28,9 +27,9 @@ class QRScanner(
                 .addOnSuccessListener { barcodes ->
                     handleBarcodes(barcodes, onBarcodeScanned)
                 }
-                .addOnFailureListener {
-                    Log.e("QR", "Scan failed", it)
-                }
+                //.addOnFailureListener {
+                //    Log.e("QR", "Scan failed", it)
+                //}
                 .addOnCompleteListener {
                     imageProxy.close()
                 }
