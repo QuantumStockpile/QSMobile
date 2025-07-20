@@ -1,6 +1,5 @@
 package com.quantstock.qsmobile.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,24 +19,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.quantstock.qsmobile.R
-import com.quantstock.qsmobile.api.ApiService
-import com.quantstock.qsmobile.api.CreateUserRequest
 import com.quantstock.qsmobile.ui.common.PasswordTextField
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.quantstock.qsmobile.viewmodels.AuthViewModel
+import com.quantstock.qsmobile.viewmodels.CreateUserState
 
 @Composable
-fun CreateUserScreen(apiService: ApiService, context: Context, navController: NavController) {
+fun CreateUserScreen(navController: NavController, authViewModel: AuthViewModel = hiltViewModel()) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var resultMessage by remember { mutableStateOf("") }
+
+    val state by authViewModel.createUserState.collectAsState()
+
+    LaunchedEffect(state) {
+        if (state is CreateUserState.Success) {
+            // Navigate back when success
+            navController.popBackStack()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -49,7 +56,7 @@ fun CreateUserScreen(apiService: ApiService, context: Context, navController: Na
         ) {
             Text(
                 modifier = Modifier.padding(bottom = 10.dp),
-                text = getString(context, R.string.create_account),
+                text = stringResource(R.string.create_account),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -57,17 +64,17 @@ fun CreateUserScreen(apiService: ApiService, context: Context, navController: Na
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text(text = getString(context, R.string.username)) },
+                label = { Text(text = stringResource(R.string.username)) },
                 modifier = Modifier.padding(top = 2.dp, bottom = 3.dp)
             )
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(text = getString(context, R.string.email)) },
+                label = { Text(text = stringResource(R.string.email)) },
                 modifier = Modifier.padding(top = 3.dp, bottom = 3.dp)
             )
             PasswordTextField(
-                label = { Text(text = getString(context, R.string.password)) },
+                label = { Text(text = stringResource(R.string.password)) },
                 password = password,
                 onPasswordChange = { password = it },
                 modifier = Modifier.padding(top = 3.dp, bottom = 6.dp)
@@ -76,26 +83,42 @@ fun CreateUserScreen(apiService: ApiService, context: Context, navController: Na
             Button(
                 modifier = Modifier.padding(top = 6.dp),
                 onClick = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val userRequest = CreateUserRequest(username, email, password)
-                            apiService.createNewUser(userRequest)
-
-                            withContext(Dispatchers.Main) {
-                                resultMessage = getString(context, R.string.account_created)
-                                navController.popBackStack() // go back to login
-                            }
-                        } catch (e: Exception) {
-                            withContext(Dispatchers.Main) {
-                                resultMessage = getString(context, R.string.registration_failed)
-                            }
-                        }
-                    }
+                    authViewModel.createNewUser(username, email, password)
+//                    CoroutineScope(Dispatchers.IO).launch {
+//                        try {
+//                            val userRequest = CreateUserRequest(username, email, password)
+//                            apiService.createNewUser(userRequest)
+//
+//                            withContext(Dispatchers.Main) {
+//                                resultMessage = stringResource(R.string.account_created)
+//                                navController.popBackStack() // go back to login
+//                            }
+//                        } catch (e: Exception) {
+//                            withContext(Dispatchers.Main) {
+//                                resultMessage = stringResource(R.string.registration_failed)
+//                            }
+//                        }
+//                    }
                 }) {
-                Text(text = getString(context, R.string.register))
+                Text(text = stringResource(R.string.register))
             }
-
-            if (resultMessage.isNotEmpty()) Text(resultMessage, color = Color.Green)
+            when(state) {
+                is CreateUserState.Error -> {
+                    Text(
+                        text = (state as CreateUserState.Error).message,
+                        color = Color.Red,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                is CreateUserState.Success -> {
+                    Text(
+                        text = stringResource(id = R.string.account_created),
+                        color = Color.Green,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                else -> {}
+            }
         }
     }
 }

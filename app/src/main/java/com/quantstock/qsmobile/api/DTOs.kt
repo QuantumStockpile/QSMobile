@@ -5,6 +5,10 @@ data class ApiInfo(
     val build_version: String
 )
 
+data class RefreshToken(
+    val refresh_token: String
+)
+
 data class CreateUserRequest(
     val username: String,
     val email: String,
@@ -25,4 +29,11 @@ data class TokenResponse(
     val access_token: String,
     val refresh_token: String,
     val token_type: String
+)
+
+data class RoleResponse(
+    val id: Int,
+    val created_at: String,
+    val updated_at: String,
+    val description: String
 )

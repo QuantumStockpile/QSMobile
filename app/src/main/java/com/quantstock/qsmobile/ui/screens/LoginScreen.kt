@@ -1,6 +1,5 @@
 package com.quantstock.qsmobile.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,11 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getString
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.quantstock.qsmobile.R
-import com.quantstock.qsmobile.api.ApiService
 import com.quantstock.qsmobile.ui.common.PasswordTextField
 import com.quantstock.qsmobile.ui.navigation.items.LoginItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
@@ -33,10 +32,8 @@ import com.quantstock.qsmobile.viewmodels.LoginState
 
 @Composable
 fun LoginScreen(
-    apiService: ApiService,
-    context: Context,
     navController: NavController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -54,7 +51,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = getString(context, R.string.welcome),
+                text = stringResource(R.string.welcome),
                 modifier = Modifier.padding(bottom = 10.dp),
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
@@ -63,11 +60,11 @@ fun LoginScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(text = getString(context, R.string.email)) },
+                label = { Text(text = stringResource(R.string.email)) },
                 modifier = Modifier.padding(top = 2.dp, bottom = 3.dp)
             )
             PasswordTextField(
-                label = { Text(text = getString(context, R.string.password)) },
+                label = { Text(text = stringResource(R.string.password)) },
                 password = password,
                 onPasswordChange = { password = it },
                 modifier = Modifier.padding(top = 3.dp, bottom = 10.dp)
@@ -75,13 +72,13 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    authViewModel.login(email, password, apiService)
+                    authViewModel.login(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text(text = getString(context, R.string.login))
+                Text(text = stringResource(R.string.login))
             }
 
             if (loginState is LoginState.Error) {
@@ -98,7 +95,7 @@ fun LoginScreen(
                 onClick = {
                     navController.navigate(LoginItems.Register.route)
                 }) {
-                Text(text = getString(context, R.string.create_account))
+                Text(text = stringResource(R.string.create_account))
             }
 
             if (status.isNotEmpty()) Text(status, color = Color.Red)

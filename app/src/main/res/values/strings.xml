@@ -16,4 +16,5 @@
     <string name="login_failed">Login failed.</string>
     <string name="registration_failed">Registration failed.</string>
     <string name="unknown_error">Unknown error occurred.</string>
+    <string name="insufficient_permissions">Insufficient permissions.</string>
 </resources>

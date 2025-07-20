@@ -1,14 +1,17 @@
 package com.quantstock.qsmobile.api
 
-import android.content.Context
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(private val context: Context) : Interceptor {
+class AuthInterceptor @Inject constructor (
+    private val tokenStorage: TokenStorage
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val token = TokenStorage.getAccessToken(context)
+        val token = tokenStorage.getAccessToken()
 
         val requestBuilder = chain.request().newBuilder()
+
         token?.let {
             requestBuilder.addHeader("Authorization", "Bearer $it")
         }

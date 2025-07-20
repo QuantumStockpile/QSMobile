@@ -1,6 +1,5 @@
 package com.quantstock.qsmobile.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -10,33 +9,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.quantstock.qsmobile.api.ApiService
 import com.quantstock.qsmobile.ui.navigation.items.MainItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
+import com.quantstock.qsmobile.viewmodels.ItemsViewModel
+import com.quantstock.qsmobile.viewmodels.RolesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
-    apiService: ApiService,
-    context: Context,
-    authViewModel: AuthViewModel
-) {
+fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
     val navController = rememberNavController()
 
-    val menuItems = listOf(MainItems.Account, MainItems.Scanner)
+    val menuItems = listOf(MainItems.Account, MainItems.Scanner, MainItems.Server, MainItems.Items)
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                val currentDestination = navController.currentBackStackEntryAsState().value?.destination
+                val currentDestination =
+                    navController.currentBackStackEntryAsState().value?.destination
                 menuItems.forEach { item ->
                     NavigationBarItem(
-                        icon = { Icon(painter = painterResource(id = item.icon), contentDescription = item.label) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(id = item.icon),
+                                contentDescription = item.label
+                            )
+                        },
                         label = { Text(item.label) },
                         selected = currentDestination?.route == item.route,
                         onClick = {
@@ -59,10 +63,20 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(MainItems.Scanner.route) {
-                ScannerScreen(context = context)
+                ScannerScreen(itemsViewModel = itemsViewModel)
             }
+
+            composable(MainItems.Items.route) {
+                MyItemsScreen(viewModel = itemsViewModel)
+            }
+
             composable(MainItems.Account.route) {
-                ApiInfoScreen(apiService = apiService, context = context, authViewModel = authViewModel)
+                Text(text = "Cba to fix it", color = Color.Red)
+            }
+
+            composable(MainItems.Server.route) { backStackEntry ->
+                val rolesViewModel: RolesViewModel = hiltViewModel(backStackEntry)
+                ApiRolesScreen(authViewModel, rolesViewModel)
             }
         }
 
