@@ -5,25 +5,32 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
-    @GET("/api-info/")
+    @GET("qsmsusers/api-info")
     suspend fun getApiInfo(): ApiInfo
 
-    @POST("/users/")
-    suspend fun createNewUser(@Body user: CreateUserRequest): CreatedUserResponse
+    @POST("qsmsusers/users/")
+    suspend fun createNewUser(@Body user: CreateUserRequest): UserResponse
 
     @FormUrlEncoded
-    @POST("/token/")
+    @POST("qsmsusers/token")
     suspend fun login(
         @Field("grant_type") grantType: String = "password",
         @Field("username") username: String,
         @Field("password") password: String,
     ): TokenResponse
 
-    @POST("/refresh/")
+    @POST("qsmsusers/refresh")
     suspend fun refresh(@Body request: RefreshToken): TokenResponse
 
-    @GET("/roles/")
+    @GET("qsmsusers/roles/")
     suspend fun getRoles(): List<RoleResponse>
+
+    @GET("qsmsusers/users/")
+    suspend fun getUsers(): List<UserResponse>
+
+    @POST("qsmsusers/roles/elevate")
+    suspend fun elevateUser(@Query("target_email") targetEmail: String): Boolean
 }

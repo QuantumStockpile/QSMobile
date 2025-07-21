@@ -19,7 +19,6 @@ import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 import com.quantstock.qsmobile.viewmodels.LoginState
 import dagger.hilt.android.AndroidEntryPoint
 
-//@HiltAndroidApp
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

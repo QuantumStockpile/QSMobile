@@ -1,6 +1,8 @@
 package com.quantstock.qsmobile.ui.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,54 +41,66 @@ fun ApiRolesScreen(
         rolesViewModel.fetchRolesIfAdmin(roleId)
     }
 
+
     // UI
-    when {
-        roleId == null -> {
-            Text("Loading role info…")
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Box(
+            modifier = Modifier.weight(1f)
+        ) {
+            when {
+                roleId == null -> {
+                    Text("Loading role info…")
+                }
 
-        roleId != 2 -> {
-            Text(
-                text = stringResource(R.string.insufficient_permissions),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+                roleId != 2 -> {
+                    Text(
+                        text = stringResource(R.string.insufficient_permissions),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
 
-        loading -> {
-            Text(
-                text = "Loading roles…",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+                loading -> {
+                    Text(
+                        text = "Loading roles…",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
 
-        error != null -> {
-            Text(
-                text = "Error: $error",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
+                error != null -> {
+                    Text(
+                        text = "Error: $error",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
 
-        else -> {
-            LazyColumn {
-                items(roles) { role ->
-                    RoleItem(role)
-                    Button(
-                        onClick = {
-                            authViewModel.logout()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Text(text = stringResource(R.string.logout))
+                else -> {
+                    LazyColumn {
+                        items(roles) { role ->
+                            RoleItem(role)
+                        }
                     }
                 }
             }
+        }
+
+        Button(
+            onClick = {
+                authViewModel.logout()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(text = stringResource(R.string.logout))
         }
     }
 }

@@ -3,6 +3,7 @@ package com.quantstock.qsmobile.viewmodels
 import android.app.Application
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -54,7 +55,6 @@ class AuthViewModel @Inject constructor(
     val roleId: StateFlow<Int?> = _roleId
 
     init {
-        // Load token from SharedPreferences at startup
         viewModelScope.launch {
             val storedRefresh = tokenStorage.getRefreshToken()
 
@@ -76,12 +76,12 @@ class AuthViewModel @Inject constructor(
                 val errorBody = h.response()?.errorBody()?.string()
                 if (errorBody?.contains("Invalid refresh token") == true) {
                     tokenStorage.clear()
-                    _loginState.value = LoginState.Error("Session expired, please log in again.")
+                    _loginState.value = LoginState.Error(getString(appContext, R.string.expired_session))
                 } else {
-                    _loginState.value = LoginState.Error("Error: ${h.message() ?: "Unknown error"}")
+                    _loginState.value = LoginState.Error("Error: ${h.message() ?: getString(appContext, R.string.unknown_error)}")
                 }
             } catch (e: Exception) {
-                _loginState.value = LoginState.Error("Unexpected error: ${e.localizedMessage}")
+                _loginState.value = LoginState.Error("${getString(appContext, R.string.unknown_error)}: ${e.localizedMessage}")
             }
         }
     }
@@ -160,7 +160,10 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             tokenStorage.clear()
             _token.value = null
-            _loginState.value = LoginState.Error("Logged out.")
+            _loginState.value = LoginState.Error(getString(
+                appContext,
+                R.string.logged_out
+            ))
         }
     }
 

@@ -20,6 +20,7 @@ import com.quantstock.qsmobile.ui.navigation.items.MainItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 import com.quantstock.qsmobile.viewmodels.RolesViewModel
+import com.quantstock.qsmobile.viewmodels.UserManagementViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,8 +71,9 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
                 MyItemsScreen(viewModel = itemsViewModel)
             }
 
-            composable(MainItems.Account.route) {
-                Text(text = "Cba to fix it", color = Color.Red)
+            composable(MainItems.Account.route) { backStackEntry ->
+                val userManagementViewModel: UserManagementViewModel = hiltViewModel(backStackEntry)
+                UserManagementScreen(authViewModel, userManagementViewModel)
             }
 
             composable(MainItems.Server.route) { backStackEntry ->

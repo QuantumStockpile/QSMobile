@@ -17,4 +17,6 @@
     <string name="registration_failed">Registration failed.</string>
     <string name="unknown_error">Unknown error occurred.</string>
     <string name="insufficient_permissions">Insufficient permissions.</string>
+    <string name="logged_out">Logged out.</string>
+    <string name="expired_session">Session expired.</string>
 </resources>
