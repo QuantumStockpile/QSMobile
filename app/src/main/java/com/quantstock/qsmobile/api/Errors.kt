@@ -1,5 +1,7 @@
 package com.quantstock.qsmobile.api
 
+// HTTP error code handling classes
+
 data class ApiErrorDetail(
     val loc: List<Any>,
     val msg: String,

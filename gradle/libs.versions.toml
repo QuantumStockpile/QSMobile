@@ -25,6 +25,7 @@ orgJetbrainsKotlinPluginSerializationGradlePlugin = "2.2.0"
 moshiKotlinCodegen = "1.15.2"
 moshiKotlin = "1.15.2"
 guava = "33.4.8-android"
+coilCompose = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,7 @@ org-jetbrains-kotlin-plugin-serialization-gradle-plugin = { group = "org.jetbrai
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshiKotlin" }
 guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

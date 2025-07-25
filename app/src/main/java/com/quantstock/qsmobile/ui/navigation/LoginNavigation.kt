@@ -9,7 +9,7 @@ import com.quantstock.qsmobile.ui.screens.CreateUserScreen
 import com.quantstock.qsmobile.ui.screens.LoginScreen
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 
-
+// login navigation
 @Composable
 fun LoginNavigation(authViewModel: AuthViewModel) {
     val navController = rememberNavController()

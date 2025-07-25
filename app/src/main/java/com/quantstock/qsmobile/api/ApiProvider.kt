@@ -11,6 +11,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+
+// this is part of the DI - Hilt takes all singletons and injects them wherever needed
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -20,7 +22,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .build()
-    }
+    } // token interceptor DI
 
     @Provides
     @Singleton
@@ -28,14 +30,14 @@ object NetworkModule {
         return Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
-    }
+    } // json converter w/ moshi DI
 
     @Provides
     @Singleton
     fun provideBaseUrl(): String {
         val baseUrl = "https://quantumstockpile.duckdns.org/"
         return baseUrl
-    }
+    } // base url DI
 
     @Provides
     @Singleton
@@ -45,11 +47,11 @@ object NetworkModule {
             .baseUrl(baseUrl)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
-    }
+    } // retrofit DI
 
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
-    }
+    } // combined api service DI
 }

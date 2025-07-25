@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.moshi.kotlin.codegen)
     implementation(libs.moshi.kotlin)
     implementation(libs.guava)
+    implementation(libs.coil.compose)
     ksp(libs.hilt.android.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

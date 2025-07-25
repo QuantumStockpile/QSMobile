@@ -23,18 +23,24 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import javax.inject.Inject
 
+// login state class - mainly used for UI purposes
 sealed class LoginState {
     object Idle : LoginState()
     object Success : LoginState()
     data class Error(val message: String) : LoginState()
 }
 
+// register state class - used when creating an account
 sealed class CreateUserState {
     object Loading : CreateUserState()
     object Success : CreateUserState()
     data class Error(val message: String) : CreateUserState()
 }
 
+// most important HiltViewModel - responsible for:
+// registering users and logging them in
+// parsing their role from the api tokens
+// signing them out
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     application: Application,
@@ -84,7 +90,7 @@ class AuthViewModel @Inject constructor(
                 _loginState.value = LoginState.Error("${getString(appContext, R.string.unknown_error)}: ${e.localizedMessage}")
             }
         }
-    }
+    } // the init block is called on every app launch - refreshing their token, decoding the role and prompting for login when something is wrong
 
     fun createNewUser(username: String, email: String, password: String) {
         viewModelScope.launch {
@@ -122,7 +128,7 @@ class AuthViewModel @Inject constructor(
                 )
             }
         }
-    }
+    } // a helper function for creating a new user via api service
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
@@ -154,7 +160,7 @@ class AuthViewModel @Inject constructor(
                 )
             }
         }
-    }
+    } // a helper function for logging a user in
 
     fun logout() {
         viewModelScope.launch {
@@ -165,7 +171,7 @@ class AuthViewModel @Inject constructor(
                 R.string.logged_out
             ))
         }
-    }
+    } // manual logout
 
     private fun parseHttpError(exception: HttpException): String {
         val errorBody = exception.response()?.errorBody()?.string()
@@ -184,7 +190,7 @@ class AuthViewModel @Inject constructor(
         } catch (e: Exception) {
             "${getString(appContext, R.string.unknown_error)}: ${e.localizedMessage}"
         }
-    }
+    } // a G(J)son parser for the HTTP error codes
 
     private fun decodeRoleFromToken(token: String) {
         try {
@@ -199,5 +205,5 @@ class AuthViewModel @Inject constructor(
         } catch (e: Exception) {
             _roleId.value = null
         }
-    }
+    } // decoding the role from the tokens
 }

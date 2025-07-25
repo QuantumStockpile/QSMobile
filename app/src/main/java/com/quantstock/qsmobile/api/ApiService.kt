@@ -7,12 +7,11 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface ApiService {
-    @GET("qsmsusers/api-info")
-    suspend fun getApiInfo(): ApiInfo
 
+// this handles retrofit's requests and endpoints
+interface ApiService {
     @POST("qsmsusers/users/")
-    suspend fun createNewUser(@Body user: CreateUserRequest): UserResponse
+    suspend fun createNewUser(@Body userRequest: CreateUserRequest): UserResponse
 
     @FormUrlEncoded
     @POST("qsmsusers/token")
@@ -23,7 +22,7 @@ interface ApiService {
     ): TokenResponse
 
     @POST("qsmsusers/refresh")
-    suspend fun refresh(@Body request: RefreshToken): TokenResponse
+    suspend fun refresh(@Body refreshToken: RefreshToken): TokenResponse
 
     @GET("qsmsusers/roles/")
     suspend fun getRoles(): List<RoleResponse>

@@ -1,31 +1,27 @@
 package com.quantstock.qsmobile.ui.screens
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.quantstock.qsmobile.R
-import com.quantstock.qsmobile.api.UserResponse
+import com.quantstock.qsmobile.ui.common.UserCard
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.UserManagementViewModel
 
@@ -73,7 +69,7 @@ fun UserManagementScreen(
     }
 
     // Main content
-    Column(modifier = Modifier.fillMaxSize()) {
+    Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
         when {
             roleId == null -> {
                 Text("Loading role info…")
@@ -89,7 +85,7 @@ fun UserManagementScreen(
             }
 
             loading -> {
-                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
+                CircularProgressIndicator()
             }
 
             error != null -> {
@@ -99,32 +95,22 @@ fun UserManagementScreen(
                     modifier = Modifier.padding(16.dp)
                 )
             }
+
             else -> {
-                LazyColumn(modifier = Modifier.weight(1f)) {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = padding
+                ) {
                     items(users) { user ->
-                        UserItem(
+                        UserCard(
                             user = user,
-                            onClick = { userManagementViewModel.onUserSelected(user) }
+                            onClick = { clickedUser ->
+                                userManagementViewModel.onUserSelected(clickedUser)
+                            }
                         )
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun UserItem(user: UserResponse, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = user.username, style = MaterialTheme.typography.titleMedium)
-            Text(text = user.email, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

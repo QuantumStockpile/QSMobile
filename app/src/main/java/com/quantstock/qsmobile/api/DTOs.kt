@@ -2,6 +2,9 @@ package com.quantstock.qsmobile.api
 
 import com.squareup.moshi.JsonClass
 
+// every single Data Transfer Object for the different endpoints
+// vals MUST be named the same way the api expects them as if called by curl - this is a retrofit requirement
+
 @JsonClass(generateAdapter = true)
 data class ApiInfo(
     val api_version: String,

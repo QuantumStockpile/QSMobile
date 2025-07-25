@@ -8,8 +8,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -27,7 +28,14 @@ import com.quantstock.qsmobile.viewmodels.UserManagementViewModel
 fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
     val navController = rememberNavController()
 
-    val menuItems = listOf(MainItems.Account, MainItems.Scanner, MainItems.Server, MainItems.Items)
+    lateinit var menuItems: List<MainItems>
+
+    val roleId by authViewModel.roleId.collectAsState()
+    menuItems = if (roleId == 2) {
+        listOf(MainItems.Account, MainItems.Scanner, MainItems.Server, MainItems.Items)
+    } else {
+        listOf(MainItems.Scanner, MainItems.Items)
+    }
 
     Scaffold(
         bottomBar = {
@@ -60,7 +68,7 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = MainItems.Account.route,
+            startDestination = MainItems.Scanner.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(MainItems.Scanner.route) {

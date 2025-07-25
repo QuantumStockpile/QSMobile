@@ -10,6 +10,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
+// a composable that binds the CameraX instance to the screen
 @Composable
 fun ScannerPreview(onBarcodeScanned: (String) -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -36,7 +37,7 @@ fun ScannerPreview(onBarcodeScanned: (String) -> Unit) {
                         )
                     }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA // no one is scanning QR codes with the selfie, let's be honest
 
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(

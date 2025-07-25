@@ -9,6 +9,9 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
+
+// a QR scanner based on Android's CameraX and MLKit's barcode scanning library
+// the preferred method for scanning QR codes in a Kotlin application
 class QRScanner(
     private val onBarcodeScanned: (String) -> Unit
 ) : ImageAnalysis.Analyzer {
@@ -45,5 +48,5 @@ class QRScanner(
         barcodes.forEach {
             onBarcodeScanned(it.rawValue ?: "")
         }
-    }
+    } // a helper function because MLKit can sometimes return multiple QR codes
 }

@@ -14,6 +14,8 @@ private const val QS_AUTH_PREFS = "auth_prefs"
 private const val ACCESS_TOKEN = "access_token"
 private const val REFRESH_TOKEN = "refresh_token"
 
+
+// unified token storage DI responsible for handling api tokens around the app
 class TokenStorage @Inject constructor(@ApplicationContext private val context: Context){
     fun saveTokens(accessToken: String, refreshToken: String?) {
         val prefs = context.getSharedPreferences(QS_AUTH_PREFS, Context.MODE_PRIVATE)
@@ -38,6 +40,8 @@ class TokenStorage @Inject constructor(@ApplicationContext private val context: 
     }
 }
 
+
+// token provider DI via Hilt's ApplicationContext
 @Module
 @InstallIn(SingletonComponent::class)
 object StorageModule {

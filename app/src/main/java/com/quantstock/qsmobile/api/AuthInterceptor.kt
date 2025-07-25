@@ -4,6 +4,8 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
+
+// token interceptor
 class AuthInterceptor @Inject constructor (
     private val tokenStorage: TokenStorage
 ) : Interceptor {

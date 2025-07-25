@@ -18,6 +18,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import com.quantstock.qsmobile.R
 
+// a PasswordTextField which allows the user to press the button to see their password
+// surprised that it's not native to Compose but oh well
 @Composable
 fun PasswordTextField(
     label: @Composable (() -> Unit)? = null,
@@ -45,7 +47,7 @@ fun PasswordTextField(
                 Icon(imageVector = image, contentDescription = description)
             }
         },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password), // when the user's default input app allows it (SwiftKey's implementation is REALLY nice)
         modifier = modifier
     )
 }
