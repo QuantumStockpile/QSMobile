@@ -20,8 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.quantstock.qsmobile.ui.navigation.items.MainItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
-import com.quantstock.qsmobile.viewmodels.RolesViewModel
-import com.quantstock.qsmobile.viewmodels.UserManagementViewModel
+import com.quantstock.qsmobile.viewmodels.AdministrationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +31,7 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
 
     val roleId by authViewModel.roleId.collectAsState()
     menuItems = if (roleId == 2) {
-        listOf(MainItems.Account, MainItems.Scanner, MainItems.Server, MainItems.Items)
+        listOf(MainItems.Administration, MainItems.Scanner, MainItems.Items)
     } else {
         listOf(MainItems.Scanner, MainItems.Items)
     }
@@ -79,15 +78,15 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
                 MyItemsScreen(viewModel = itemsViewModel)
             }
 
-            composable(MainItems.Account.route) { backStackEntry ->
-                val userManagementViewModel: UserManagementViewModel = hiltViewModel(backStackEntry)
-                UserManagementScreen(authViewModel, userManagementViewModel)
+            composable(MainItems.Administration.route) { backStackEntry ->
+                val administrationViewModel: AdministrationViewModel = hiltViewModel(backStackEntry)
+                AdministrationScreen(authViewModel, administrationViewModel)
             }
 
-            composable(MainItems.Server.route) { backStackEntry ->
-                val rolesViewModel: RolesViewModel = hiltViewModel(backStackEntry)
-                ApiRolesScreen(authViewModel, rolesViewModel)
-            }
+//            composable(MainItems.Server.route) { backStackEntry ->
+//                val administrationViewModel: AdministrationViewModel = hiltViewModel(backStackEntry)
+//                ApiRolesScreen(authViewModel, administrationViewModel)
+//            }
         }
 
     }
