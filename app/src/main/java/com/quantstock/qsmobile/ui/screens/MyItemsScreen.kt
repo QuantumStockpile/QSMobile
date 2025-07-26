@@ -1,10 +1,14 @@
 package com.quantstock.qsmobile.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,7 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.quantstock.qsmobile.ui.common.FilterButton
 import com.quantstock.qsmobile.ui.common.ItemCard
+import com.quantstock.qsmobile.viewmodels.EquipmentFilter
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 
 @Composable
@@ -37,13 +43,28 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
 
     var selectedItemName by remember { mutableStateOf<String?>(null) }
 
-    val filteredItems = remember(searchQuery, items) {
-        if (searchQuery.isBlank()) {
+    val filteredItems = remember(searchQuery, items, viewModel.currentFilter) {
+        val searchFiltered = if (searchQuery.isBlank()) {
             items
         } else {
             items.filter { item ->
-                item.contains(searchQuery, ignoreCase = true)
+                item.name.contains(searchQuery, ignoreCase = true)
             }
+        }
+        when (viewModel.currentFilter) {
+            EquipmentFilter.NONE -> searchFiltered
+            EquipmentFilter.CREATED_AT_NEWEST ->
+                searchFiltered.sortedByDescending { it.createdAt }
+            EquipmentFilter.CREATED_AT_OLDEST ->
+                searchFiltered.sortedBy { it.createdAt }
+            EquipmentFilter.STATUS_AVAILABLE ->
+                searchFiltered.filter { it.status.equals("Available", ignoreCase = true) }
+            EquipmentFilter.STATUS_IN_USE ->
+                searchFiltered.filter { it.status.equals("In Use", ignoreCase = true) }
+            EquipmentFilter.LOCATION_HQ ->
+                searchFiltered.filter { it.location.name == "Headquarters" }
+            EquipmentFilter.LOCATION_WAREHOUSE ->
+                searchFiltered.filter { it.location.name == "Warehouse" }
         }
     }
 
@@ -53,18 +74,30 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // search bar
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Search items…") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp),
-                singleLine = true,
-                shape = RoundedCornerShape(50)
-            )
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // search bar
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search items…") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    shape = RoundedCornerShape(50)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // filter button
+                FilterButton(viewModel)
+            }
+
             // actual items
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -73,11 +106,8 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                     .padding(8.dp)
             ) {
                 items(filteredItems) { item ->
-                    ItemCard(
-                        item,
-                        "https://atlas-content-cdn.pixelsquid.com/stock-images/dice-B5mdRR0-600.jpg"
-                    ) {
-                        selectedItemName = item
+                    ItemCard(item) {
+                        selectedItemName = item.name
                     }
                 }
             }

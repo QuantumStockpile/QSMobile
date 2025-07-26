@@ -17,12 +17,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.quantstock.qsmobile.api.Equipment
 
 // a Composable that displays different items in a nice, tile-like way
 @Composable
 fun ItemCard(
-    name: String,
-    imageUrl: String,
+    item: Equipment,
     onClick: () -> Unit
 ) {
     Surface(
@@ -39,23 +39,23 @@ fun ItemCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = imageUrl,
-                contentDescription = name,
+                model = item.photoUrl,
+                contentDescription = item.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
                 contentScale = ContentScale.Fit
-            ) // coil's AsyncImage allows the item to receive its accompanying photo only when the screen is opened
+            ) // coil's AsyncImage allows runtime image loading
 
             Text(
-                text = name,
+                text = item.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
-            ) // a short content description // item name - no DTO class yet :(
+            ) // a short content description
         }
     }
 }

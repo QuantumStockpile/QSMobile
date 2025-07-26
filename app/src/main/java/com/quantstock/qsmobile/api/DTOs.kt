@@ -1,6 +1,7 @@
 package com.quantstock.qsmobile.api
 
 import com.squareup.moshi.JsonClass
+import java.time.LocalDateTime
 
 // every single Data Transfer Object for the different endpoints
 // vals MUST be named the same way the api expects them as if called by curl - this is a retrofit requirement
@@ -46,5 +47,32 @@ data class RoleResponse(
     val id: Int,
     val created_at: String,
     val updated_at: String,
+    val description: String
+)
+
+@JsonClass(generateAdapter = true)
+data class Equipment(
+    val id: Int,
+    val name: String,
+    val type: EquipmentType,
+    val serialNumber: String,
+    val status: String,
+    val condition: String,
+    val location: Location,
+    val photoUrl: String?,
+    val qrCodeData: String?,
+    val metadata: String?,     // optional json notes
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime
+)
+
+data class EquipmentType(
+    val id: Int,
+    val name: String
+)
+
+data class Location(
+    val id: Int,
+    val name: String,
     val description: String
 )
