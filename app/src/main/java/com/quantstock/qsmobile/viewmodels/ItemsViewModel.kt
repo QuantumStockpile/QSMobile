@@ -22,6 +22,17 @@ enum class EquipmentFilter {
     LOCATION_WAREHOUSE
 }
 
+fun EquipmentFilter.toLabel(): String = when (this) {
+    EquipmentFilter.NONE -> "No filter"
+    EquipmentFilter.CREATED_AT_NEWEST -> "Newest first"
+    EquipmentFilter.CREATED_AT_OLDEST -> "Oldest first"
+    EquipmentFilter.STATUS_AVAILABLE -> "Status: Available"
+    EquipmentFilter.STATUS_IN_USE -> "Status: In Use"
+    EquipmentFilter.LOCATION_HQ -> "Location: HQ"
+    EquipmentFilter.LOCATION_WAREHOUSE -> "Location: Warehouse"
+}
+
+
 // a viewmodel responsible for handling items returned from the api - not yet
 @HiltViewModel
 class ItemsViewModel @Inject constructor() : ViewModel() {

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,12 +29,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.quantstock.qsmobile.api.Equipment
+import com.quantstock.qsmobile.ui.common.ExpandedItemView
 import com.quantstock.qsmobile.ui.common.FilterButton
 import com.quantstock.qsmobile.ui.common.ItemCard
 import com.quantstock.qsmobile.viewmodels.EquipmentFilter
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
+import com.quantstock.qsmobile.viewmodels.toLabel
 
 @Composable
 fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
@@ -41,7 +46,7 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
 
     var searchQuery by remember { mutableStateOf("") }
 
-    var selectedItemName by remember { mutableStateOf<String?>(null) }
+    var selectedItem by remember { mutableStateOf<Equipment?>(null) }
 
     val filteredItems = remember(searchQuery, items, viewModel.currentFilter) {
         val searchFiltered = if (searchQuery.isBlank()) {
@@ -55,14 +60,19 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
             EquipmentFilter.NONE -> searchFiltered
             EquipmentFilter.CREATED_AT_NEWEST ->
                 searchFiltered.sortedByDescending { it.createdAt }
+
             EquipmentFilter.CREATED_AT_OLDEST ->
                 searchFiltered.sortedBy { it.createdAt }
+
             EquipmentFilter.STATUS_AVAILABLE ->
                 searchFiltered.filter { it.status.equals("Available", ignoreCase = true) }
+
             EquipmentFilter.STATUS_IN_USE ->
                 searchFiltered.filter { it.status.equals("In Use", ignoreCase = true) }
+
             EquipmentFilter.LOCATION_HQ ->
                 searchFiltered.filter { it.location.name == "Headquarters" }
+
             EquipmentFilter.LOCATION_WAREHOUSE ->
                 searchFiltered.filter { it.location.name == "Warehouse" }
         }
@@ -98,6 +108,19 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 FilterButton(viewModel)
             }
 
+            // small filter reminder
+            if (viewModel.currentFilter != EquipmentFilter.NONE) {
+                Text(
+                    text = "Filtered by: ${viewModel.currentFilter.toLabel()}",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
             // actual items
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -107,35 +130,26 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
             ) {
                 items(filteredItems) { item ->
                     ItemCard(item) {
-                        selectedItemName = item.name
+                        selectedItem = item
                     }
                 }
             }
         }
 
         FloatingActionButton(
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
             onClick = { viewModel.onItemScanned() }) {
             Text("+") // later replace with Icon
         }
     }
 
 
-    if (selectedItemName != null) {
-        AlertDialog(
-            onDismissRequest = { selectedItemName = null },
-            title = {
-                Text(text = "Item clicked")
-            },
-            text = {
-                Text(text = "You clicked on: $selectedItemName")
-            },
-            confirmButton = {
-                TextButton(onClick = { selectedItemName = null }) {
-                    Text("OK")
-                }
-            }
-        )
+    if (selectedItem != null) {
+        ExpandedItemView(selectedItem!!) {
+            selectedItem = null
+        }
     }
 
     // Dialog for entering item name

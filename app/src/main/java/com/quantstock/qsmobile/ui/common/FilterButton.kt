@@ -32,6 +32,13 @@ fun FilterButton(viewModel: ItemsViewModel = hiltViewModel()) {
             onDismissRequest = { expanded = false }
         ) {
             DropdownMenuItem(
+                text = { Text("None") },
+                onClick = {
+                    viewModel.onFilterSelected(EquipmentFilter.NONE)
+                    expanded = false
+                }
+            )
+            DropdownMenuItem(
                 text = { Text("Newest") },
                 onClick = {
                     viewModel.onFilterSelected(EquipmentFilter.CREATED_AT_NEWEST)
