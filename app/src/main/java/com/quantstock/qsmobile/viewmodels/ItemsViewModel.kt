@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.quantstock.qsmobile.api.Equipment
 import com.quantstock.qsmobile.api.EquipmentType
+import com.quantstock.qsmobile.api.ItemStatus
 import com.quantstock.qsmobile.api.Location
 import com.quantstock.qsmobile.ui.common.ItemMockups
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,8 +69,8 @@ class ItemsViewModel @Inject constructor() : ViewModel() {
                 name = "New item",
                 type = EquipmentType(3, "Accessory"),
                 serialNumber = "SN${items.size + 1}",
-                status = "Available",
-                condition = "New",
+                status = ItemStatus.AVAILABLE,
+                condition = 10,
                 location = Location(3, "Storage", "skladp2"),
                 photoUrl = null,
                 qrCodeData = scannedCode,
@@ -88,8 +89,8 @@ class ItemsViewModel @Inject constructor() : ViewModel() {
                 name = name,
                 type = EquipmentType(3, "Accessory"),
                 serialNumber = "SN${items.size + 1}",
-                status = "Available",
-                condition = "New",
+                status = ItemStatus.AVAILABLE,
+                condition = 10,
                 location = Location(3, "Storage", "skladp2"),
                 photoUrl = null,
                 qrCodeData = "qr${items.size + 1}",

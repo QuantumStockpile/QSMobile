@@ -17,6 +17,7 @@ import com.quantstock.qsmobile.ui.theme.QSMobileTheme
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 import com.quantstock.qsmobile.viewmodels.LoginState
+import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val authViewModel: AuthViewModel = hiltViewModel()
             val itemsViewModel: ItemsViewModel = hiltViewModel()
+            val requestsViewModel: RequestsViewModel = hiltViewModel()
             val loginState by authViewModel.loginState.collectAsState()
 
             QSMobileTheme {
@@ -36,7 +38,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     when(loginState) {
                         is LoginState.Success -> {
-                            MainScreen(authViewModel, itemsViewModel)
+                            MainScreen(authViewModel, itemsViewModel, requestsViewModel)
                         }
                         else -> {
                             LoginNavigation(authViewModel)

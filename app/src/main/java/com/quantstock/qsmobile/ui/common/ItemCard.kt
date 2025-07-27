@@ -55,7 +55,7 @@ fun ItemCard(
                     .padding(12.dp),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
-            ) // a short content description
+            ) // the name of the item
         }
     }
 }

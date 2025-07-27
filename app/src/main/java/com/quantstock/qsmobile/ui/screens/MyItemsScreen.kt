@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.quantstock.qsmobile.api.Equipment
+import com.quantstock.qsmobile.api.ItemStatus
 import com.quantstock.qsmobile.ui.common.ExpandedItemView
 import com.quantstock.qsmobile.ui.common.FilterButton
 import com.quantstock.qsmobile.ui.common.ItemCard
@@ -65,10 +66,10 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 searchFiltered.sortedBy { it.createdAt }
 
             EquipmentFilter.STATUS_AVAILABLE ->
-                searchFiltered.filter { it.status.equals("Available", ignoreCase = true) }
+                searchFiltered.filter { it.status == ItemStatus.AVAILABLE }
 
             EquipmentFilter.STATUS_IN_USE ->
-                searchFiltered.filter { it.status.equals("In Use", ignoreCase = true) }
+                searchFiltered.filter { it.status == ItemStatus.CHECKED_OUT }
 
             EquipmentFilter.LOCATION_HQ ->
                 searchFiltered.filter { it.location.name == "Headquarters" }
@@ -135,7 +136,6 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 }
             }
         }
-
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)

@@ -11,14 +11,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,14 +28,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.quantstock.qsmobile.R
+import com.quantstock.qsmobile.ui.common.ExpandedUserView
 import com.quantstock.qsmobile.ui.common.UserCard
 import com.quantstock.qsmobile.viewmodels.AdministrationViewModel
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
+import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 
 @Composable
 fun AdministrationScreen(
     authViewModel: AuthViewModel = hiltViewModel(),
-    administrationViewModel: AdministrationViewModel = hiltViewModel()
+    administrationViewModel: AdministrationViewModel = hiltViewModel(),
+    requestsViewModel: RequestsViewModel = hiltViewModel()
 ) {
     val roleId by authViewModel.roleId.collectAsState()
 
@@ -70,26 +70,12 @@ fun AdministrationScreen(
 
     // dialog for elevation confirmation
     if (showDialog && selectedUser != null) {
-        AlertDialog(
-            onDismissRequest = { administrationViewModel.dismissDialog() },
-            title = { Text("Elevate User") },
-            text = {
-                Text("Elevate ${selectedUser?.email} to admin?")
-            },
-            confirmButton = {
-                Button(
-                    onClick = { administrationViewModel.elevateUser(roleId) }
-                ) {
-                    Text("Confirm")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { administrationViewModel.dismissDialog() }
-                ) {
-                    Text("Cancel")
-                }
-            }
+        val requests by requestsViewModel.requests.collectAsState()
+        ExpandedUserView(
+            user = selectedUser!!,
+            requests = requests,
+            onElevateClick = { administrationViewModel.elevateUser(roleId) },
+            onDismiss = { administrationViewModel.dismissDialog() }
         )
     }
 

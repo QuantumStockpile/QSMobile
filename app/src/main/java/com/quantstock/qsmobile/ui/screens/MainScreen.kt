@@ -21,19 +21,24 @@ import com.quantstock.qsmobile.ui.navigation.items.MainItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 import com.quantstock.qsmobile.viewmodels.AdministrationViewModel
+import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
+fun MainScreen(
+    authViewModel: AuthViewModel,
+    itemsViewModel: ItemsViewModel,
+    requestsViewModel: RequestsViewModel
+) {
     val navController = rememberNavController()
 
     lateinit var menuItems: List<MainItems>
 
     val roleId by authViewModel.roleId.collectAsState()
     menuItems = if (roleId == 2) {
-        listOf(MainItems.Administration, MainItems.Scanner, MainItems.Items)
+        listOf(MainItems.Administration, MainItems.Scanner, MainItems.Items, MainItems.Requests)
     } else {
-        listOf(MainItems.Scanner, MainItems.Items)
+        listOf(MainItems.Scanner, MainItems.Items, MainItems.Requests)
     }
 
     Scaffold(
@@ -67,7 +72,7 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = MainItems.Scanner.route,
+            startDestination = MainItems.Items.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(MainItems.Scanner.route) {
@@ -80,13 +85,11 @@ fun MainScreen(authViewModel: AuthViewModel, itemsViewModel: ItemsViewModel) {
 
             composable(MainItems.Administration.route) { backStackEntry ->
                 val administrationViewModel: AdministrationViewModel = hiltViewModel(backStackEntry)
-                AdministrationScreen(authViewModel, administrationViewModel)
+                AdministrationScreen(authViewModel, administrationViewModel, requestsViewModel)
             }
-
-//            composable(MainItems.Server.route) { backStackEntry ->
-//                val administrationViewModel: AdministrationViewModel = hiltViewModel(backStackEntry)
-//                ApiRolesScreen(authViewModel, administrationViewModel)
-//            }
+            composable(MainItems.Requests.route) {
+                RequestHistoryScreen(requestsViewModel = requestsViewModel)
+            }
         }
 
     }

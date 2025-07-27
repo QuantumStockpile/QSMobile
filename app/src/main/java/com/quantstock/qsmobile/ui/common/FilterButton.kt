@@ -16,11 +16,14 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.quantstock.qsmobile.viewmodels.EquipmentFilter
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
+import com.quantstock.qsmobile.viewmodels.toLabel
 
 // a Composable filter button
 @Composable
 fun FilterButton(viewModel: ItemsViewModel = hiltViewModel()) {
     var expanded by remember { mutableStateOf(false) }
+
+    val filters = EquipmentFilter.entries
 
     Box {
         IconButton(onClick = { expanded = true }) {
@@ -31,55 +34,15 @@ fun FilterButton(viewModel: ItemsViewModel = hiltViewModel()) {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            DropdownMenuItem(
-                text = { Text("None") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.NONE)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Newest") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.CREATED_AT_NEWEST)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Oldest") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.CREATED_AT_OLDEST)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Available") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.STATUS_AVAILABLE)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("In Use") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.STATUS_IN_USE)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Location: HQ") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.LOCATION_HQ)
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = { Text("Location: Warehouse") },
-                onClick = {
-                    viewModel.onFilterSelected(EquipmentFilter.LOCATION_WAREHOUSE)
-                    expanded = false
-                }
-            )
+            filters.forEach {
+                DropdownMenuItem(
+                    text = { Text(it.toLabel()) },
+                    onClick = {
+                        viewModel.onFilterSelected(it)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }

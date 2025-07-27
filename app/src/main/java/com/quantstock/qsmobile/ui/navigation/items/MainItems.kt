@@ -8,4 +8,5 @@ sealed class MainItems(val route: String, val icon: Int, val label: String) {
     object Administration : MainItems(route = "account", icon = R.drawable.administration, label = "Administration")
 
     object Items : MainItems(route = "items", icon = R.drawable.items, label = "My Items")
+    object Requests: MainItems(route = "myRequests", icon = R.drawable.request_list, label = "My Requests")
 }

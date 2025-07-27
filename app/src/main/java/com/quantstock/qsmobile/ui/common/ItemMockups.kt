@@ -2,6 +2,7 @@ package com.quantstock.qsmobile.ui.common
 
 import com.quantstock.qsmobile.api.Equipment
 import com.quantstock.qsmobile.api.EquipmentType
+import com.quantstock.qsmobile.api.ItemStatus
 import com.quantstock.qsmobile.api.Location
 import java.time.LocalDateTime
 
@@ -19,8 +20,8 @@ object ItemMockups {
             name = "MacBook Pro",
             type = fakeTypeLaptop,
             serialNumber = "SN12345",
-            status = "Available",
-            condition = "Good",
+            status = ItemStatus.AVAILABLE,
+            condition = 8,
             location = fakeLocationHQ,
             photoUrl = "https://picsum.photos/200", // random test image
             qrCodeData = "macbook_qr",
@@ -33,8 +34,8 @@ object ItemMockups {
             name = "iPhone 14",
             type = fakeTypePhone,
             serialNumber = "SN67890",
-            status = "In Use",
-            condition = "Excellent",
+            status = ItemStatus.CHECKED_OUT,
+            condition = 10,
             location = fakeLocationWH,
             photoUrl = null, // test default image fallback
             qrCodeData = "iphone_qr",
@@ -42,6 +43,21 @@ object ItemMockups {
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
         )
+    )
+
+    val singleEquipment = Equipment(
+        id = 3,
+        name = "MacBook Lite",
+        type = fakeTypeLaptop,
+        serialNumber = "SN12347",
+        status = ItemStatus.AVAILABLE,
+        condition = 8,
+        location = fakeLocationHQ,
+        photoUrl = "https://picsum.photos/200", // random test image
+        qrCodeData = "macbook_qr",
+        metadata = null,
+        createdAt = LocalDateTime.now(),
+        updatedAt = LocalDateTime.now()
     )
 
 }
