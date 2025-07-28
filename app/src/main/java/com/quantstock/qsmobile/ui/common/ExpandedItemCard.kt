@@ -40,7 +40,7 @@ fun ExpandedItemView(
                 ) {
                     // Image (larger)
                     AsyncImage(
-                        model = item.photoUrl ?: "https://www.differencebetween.net/wp-content/uploads/2012/01/Difference-Between-Example-and-Sample.jpg",
+                        model = item.photo_url ?: "https://www.differencebetween.net/wp-content/uploads/2012/01/Difference-Between-Example-and-Sample.jpg",
                         contentDescription = item.name,
                         contentScale = ContentScale.Crop,
                         modifier = Modifier

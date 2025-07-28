@@ -3,7 +3,6 @@ package com.quantstock.qsmobile.viewmodels
 import android.app.Application
 import android.content.Context
 import android.util.Base64
-import android.util.Log
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

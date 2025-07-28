@@ -34,24 +34,6 @@ class AdministrationViewModel @Inject constructor(
     private val _showDialog = MutableStateFlow(false)
     val showDialog: StateFlow<Boolean> = _showDialog
 
-    fun fetchRolesIfAdmin(roleId: Int?) {
-        if (roleId == 2) {
-            viewModelScope.launch {
-                _loading.value = true
-                _error.value = null
-                try {
-                    _roles.value = apiService.getRoles()
-                } catch (e: Exception) {
-                    _error.value = e.localizedMessage
-                } finally {
-                    _loading.value = false
-                }
-            }
-        } else {
-            _roles.value = emptyList()
-        }
-    }
-
     fun fetchUsersIfAdmin(roleId: Int?) {
         if (roleId == 2) {
             viewModelScope.launch {

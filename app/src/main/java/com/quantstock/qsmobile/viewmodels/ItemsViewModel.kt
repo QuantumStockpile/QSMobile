@@ -1,53 +1,40 @@
 package com.quantstock.qsmobile.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.quantstock.qsmobile.api.ApiService
 import com.quantstock.qsmobile.api.Equipment
-import com.quantstock.qsmobile.api.EquipmentType
-import com.quantstock.qsmobile.api.ItemStatus
-import com.quantstock.qsmobile.api.Location
-import com.quantstock.qsmobile.ui.common.ItemMockups
+import com.quantstock.qsmobile.ui.common.EquipmentFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// filter class
-enum class EquipmentFilter {
-    NONE,
-    CREATED_AT_NEWEST,
-    CREATED_AT_OLDEST,
-    STATUS_AVAILABLE,
-    STATUS_IN_USE,
-    LOCATION_HQ,
-    LOCATION_WAREHOUSE
-}
-
-fun EquipmentFilter.toLabel(): String = when (this) {
-    EquipmentFilter.NONE -> "No filter"
-    EquipmentFilter.CREATED_AT_NEWEST -> "Newest first"
-    EquipmentFilter.CREATED_AT_OLDEST -> "Oldest first"
-    EquipmentFilter.STATUS_AVAILABLE -> "Status: Available"
-    EquipmentFilter.STATUS_IN_USE -> "Status: In Use"
-    EquipmentFilter.LOCATION_HQ -> "Location: HQ"
-    EquipmentFilter.LOCATION_WAREHOUSE -> "Location: Warehouse"
-}
-
-
-// a viewmodel responsible for handling items returned from the api - not yet
+// a viewmodel responsible for handling items returned from the api
 @HiltViewModel
-class ItemsViewModel @Inject constructor() : ViewModel() {
-    var items by mutableStateOf<List<Equipment>>(emptyList())
-        private set
+class ItemsViewModel @Inject constructor(
+    private val apiService: ApiService
+) : ViewModel() {
+    private val _items = MutableStateFlow<List<Equipment>>(emptyList())
+    val items: StateFlow<List<Equipment>> = _items
 
-    var currentFilter by mutableStateOf(EquipmentFilter.NONE)
-        private set
+    private val _currentFilter = MutableStateFlow<EquipmentFilter>(EquipmentFilter.None)
+    val currentFilter: StateFlow<EquipmentFilter> = _currentFilter
+
 
     var showNameDialog by mutableStateOf(false)
         private set
 
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
     init {
-        items = ItemMockups.testEquipments
+        fetchItems()
     }
 
     fun onItemScanned() {
@@ -55,16 +42,28 @@ class ItemsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onFilterSelected(filter: EquipmentFilter) {
-        currentFilter = filter
+        _currentFilter.value = filter
     }
 
     fun onDialogDismiss() {
         showNameDialog = false
     }
 
+    private fun fetchItems() {
+        viewModelScope.launch {
+            try {
+                val response = apiService.getInventory()
+                _items.value = response.items
+            } catch (e: Exception) {
+                errorMessage = e.localizedMessage
+            }
+        }
+    }
+
     fun onCodeScanned(scannedCode: String) {
         if (scannedCode.isNotBlank()) {
-            val newItem = Equipment(
+            Log.d("Thing worked", "It worked!")
+            /*val newItem = Equipment(
                 id = items.size + 1,
                 name = "New item",
                 type = EquipmentType(3, "Accessory"),
@@ -78,13 +77,14 @@ class ItemsViewModel @Inject constructor() : ViewModel() {
                 createdAt = java.time.LocalDateTime.now(),
                 updatedAt = java.time.LocalDateTime.now()
             )
-            items += newItem
+            items += newItem*/
         }
     }
 
     fun onNameConfirm(name: String) {
         if (name.isNotBlank()) {
-            val newItem = Equipment(
+            Log.d("Thing worked", "It worked!")
+            /*val newItem = Equipment(
                 id = items.size + 1,
                 name = name,
                 type = EquipmentType(3, "Accessory"),
@@ -98,7 +98,7 @@ class ItemsViewModel @Inject constructor() : ViewModel() {
                 createdAt = java.time.LocalDateTime.now(),
                 updatedAt = java.time.LocalDateTime.now()
             )
-            items += newItem
+            items += newItem*/
         }
         showNameDialog = false
     }

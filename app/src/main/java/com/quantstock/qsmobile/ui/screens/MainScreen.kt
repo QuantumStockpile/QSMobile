@@ -21,6 +21,8 @@ import com.quantstock.qsmobile.ui.navigation.items.MainItems
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
 import com.quantstock.qsmobile.viewmodels.AdministrationViewModel
+import com.quantstock.qsmobile.viewmodels.EquipmentTypeViewModel
+import com.quantstock.qsmobile.viewmodels.LocationViewModel
 import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,7 +30,9 @@ import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 fun MainScreen(
     authViewModel: AuthViewModel,
     itemsViewModel: ItemsViewModel,
-    requestsViewModel: RequestsViewModel
+    requestsViewModel: RequestsViewModel,
+    equipmentTypeViewModel: EquipmentTypeViewModel,
+    locationViewModel: LocationViewModel
 ) {
     val navController = rememberNavController()
 
@@ -79,8 +83,8 @@ fun MainScreen(
                 ScannerScreen(itemsViewModel = itemsViewModel)
             }
 
-            composable(MainItems.Items.route) {
-                MyItemsScreen(viewModel = itemsViewModel)
+            composable(MainItems.Items.route) { backStackEntry ->
+                ItemsScreen(roleId!!, itemsViewModel = itemsViewModel, locationsViewModel = locationViewModel, typesViewModel = equipmentTypeViewModel)
             }
 
             composable(MainItems.Administration.route) { backStackEntry ->

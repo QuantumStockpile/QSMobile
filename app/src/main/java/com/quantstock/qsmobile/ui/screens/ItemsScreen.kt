@@ -16,13 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,25 +31,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.quantstock.qsmobile.api.Equipment
-import com.quantstock.qsmobile.api.ItemStatus
+import com.quantstock.qsmobile.ui.common.EquipmentFilter
 import com.quantstock.qsmobile.ui.common.ExpandedItemView
 import com.quantstock.qsmobile.ui.common.FilterButton
 import com.quantstock.qsmobile.ui.common.ItemCard
-import com.quantstock.qsmobile.viewmodels.EquipmentFilter
+import com.quantstock.qsmobile.ui.common.SpeedDial
+import com.quantstock.qsmobile.ui.common.toLabel
+import com.quantstock.qsmobile.viewmodels.EquipmentTypeViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
-import com.quantstock.qsmobile.viewmodels.toLabel
+import com.quantstock.qsmobile.viewmodels.LocationViewModel
 
 @Composable
-fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
-    val items = viewModel.items
+fun ItemsScreen(
+    roleId: Int,
+    itemsViewModel: ItemsViewModel,
+    locationsViewModel: LocationViewModel,
+    typesViewModel: EquipmentTypeViewModel
+) {
+    val items by itemsViewModel.items.collectAsState()
+    val currentFilter by itemsViewModel.currentFilter.collectAsState()
+
+    val locations by locationsViewModel.locations.collectAsState()
+    val types by typesViewModel.types.collectAsState()
 
     var searchQuery by remember { mutableStateOf("") }
 
     var selectedItem by remember { mutableStateOf<Equipment?>(null) }
 
-    val filteredItems = remember(searchQuery, items, viewModel.currentFilter) {
+    val filteredItems = remember(searchQuery, items, currentFilter) {
         val searchFiltered = if (searchQuery.isBlank()) {
             items
         } else {
@@ -57,27 +67,33 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 item.name.contains(searchQuery, ignoreCase = true)
             }
         }
-        when (viewModel.currentFilter) {
-            EquipmentFilter.NONE -> searchFiltered
-            EquipmentFilter.CREATED_AT_NEWEST ->
-                searchFiltered.sortedByDescending { it.createdAt }
 
-            EquipmentFilter.CREATED_AT_OLDEST ->
-                searchFiltered.sortedBy { it.createdAt }
+        when (currentFilter) {
+            is EquipmentFilter.None -> searchFiltered
 
-            EquipmentFilter.STATUS_AVAILABLE ->
-                searchFiltered.filter { it.status == ItemStatus.AVAILABLE }
+            is EquipmentFilter.CreatedAtNewest ->
+                searchFiltered.sortedByDescending { it.created_at }
 
-            EquipmentFilter.STATUS_IN_USE ->
-                searchFiltered.filter { it.status == ItemStatus.CHECKED_OUT }
+            is EquipmentFilter.CreatedAtOldest ->
+                searchFiltered.sortedBy { it.created_at }
 
-            EquipmentFilter.LOCATION_HQ ->
-                searchFiltered.filter { it.location.name == "Headquarters" }
+            is EquipmentFilter.Status -> {
+                val filter = currentFilter as EquipmentFilter.Status
+                searchFiltered.filter { it.status.equals(filter.status, ignoreCase = true) }
+            }
 
-            EquipmentFilter.LOCATION_WAREHOUSE ->
-                searchFiltered.filter { it.location.name == "Warehouse" }
+            is EquipmentFilter.Location -> {
+                val filter = currentFilter as EquipmentFilter.Location
+                searchFiltered.filter { it.location.id == filter.locationId }
+            }
+
+            is EquipmentFilter.Type -> {
+                val filter = currentFilter as EquipmentFilter.Type
+                searchFiltered.filter { it.type.id == filter.typeId }
+            }
         }
     }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -106,13 +122,13 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 Spacer(modifier = Modifier.width(8.dp))
 
                 // filter button
-                FilterButton(viewModel)
+                FilterButton(itemsViewModel, locations, types)
             }
 
             // small filter reminder
-            if (viewModel.currentFilter != EquipmentFilter.NONE) {
+            if (currentFilter != EquipmentFilter.None) {
                 Text(
-                    text = "Filtered by: ${viewModel.currentFilter.toLabel()}",
+                    text = "Filtered by: ${currentFilter.toLabel()}",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
@@ -136,12 +152,13 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
                 }
             }
         }
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            onClick = { viewModel.onItemScanned() }) {
-            Text("+") // later replace with Icon
+        if(roleId == 2) {
+            SpeedDial(
+                modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+                onNewItem = { itemsViewModel.onItemScanned() },
+                onNewType = { typesViewModel.addEquipmentType("Testing") },
+                onNewLocation = { locationsViewModel.addLocation("Long-term Storage", "A long term storage") }
+            )
         }
     }
 
@@ -154,9 +171,9 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
 
     // Dialog for entering item name
     var tempName by remember { mutableStateOf("") }
-    if (viewModel.showNameDialog) {
+    if (itemsViewModel.showNameDialog) {
         AlertDialog(
-            onDismissRequest = { viewModel.onDialogDismiss() },
+            onDismissRequest = { itemsViewModel.onDialogDismiss() },
             title = { Text("New Item") },
             text = {
                 OutlinedTextField(
@@ -167,7 +184,7 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
             },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.onNameConfirm(tempName)
+                    itemsViewModel.onNameConfirm(tempName)
                     tempName = ""
                 }) {
                     Text("Add")
@@ -175,7 +192,7 @@ fun MyItemsScreen(viewModel: ItemsViewModel = hiltViewModel()) {
             },
             dismissButton = {
                 TextButton(onClick = {
-                    viewModel.onDialogDismiss()
+                    itemsViewModel.onDialogDismiss()
                     tempName = ""
                 }) {
                     Text("Cancel")

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -13,17 +14,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.quantstock.qsmobile.viewmodels.EquipmentFilter
+import com.quantstock.qsmobile.api.EquipmentType
+import com.quantstock.qsmobile.api.Location
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
-import com.quantstock.qsmobile.viewmodels.toLabel
 
 // a Composable filter button
 @Composable
-fun FilterButton(viewModel: ItemsViewModel = hiltViewModel()) {
+fun FilterButton(
+    itemsViewModel: ItemsViewModel,
+    locations: List<Location>,
+    types: List<EquipmentType>
+) {
     var expanded by remember { mutableStateOf(false) }
 
-    val filters = EquipmentFilter.entries
+    val staticFilters = listOf(
+        EquipmentFilter.None,
+        EquipmentFilter.CreatedAtNewest,
+        EquipmentFilter.CreatedAtOldest
+    )
 
     Box {
         IconButton(onClick = { expanded = true }) {
@@ -34,11 +42,33 @@ fun FilterButton(viewModel: ItemsViewModel = hiltViewModel()) {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            filters.forEach {
+            staticFilters.forEach {
                 DropdownMenuItem(
                     text = { Text(it.toLabel()) },
                     onClick = {
-                        viewModel.onFilterSelected(it)
+                        itemsViewModel.onFilterSelected(it)
+                        expanded = false
+                    }
+                )
+            }
+
+            HorizontalDivider()
+
+            locations.forEach { location ->
+                DropdownMenuItem(
+                    text = { Text("Location: ${location.name}") },
+                    onClick = {
+                        itemsViewModel.onFilterSelected(EquipmentFilter.Location(location.id, location.name))
+                        expanded = false
+                    }
+                )
+            }
+
+            types.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text("Type: ${type.name}") },
+                    onClick = {
+                        itemsViewModel.onFilterSelected(EquipmentFilter.Type(type.id, type.name))
                         expanded = false
                     }
                 )

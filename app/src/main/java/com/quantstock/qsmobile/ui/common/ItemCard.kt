@@ -39,7 +39,7 @@ fun ItemCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AsyncImage(
-                model = item.photoUrl,
+                model = item.photo_url,
                 contentDescription = item.name,
                 modifier = Modifier
                     .fillMaxWidth()

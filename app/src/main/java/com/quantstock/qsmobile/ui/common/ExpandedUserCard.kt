@@ -25,7 +25,7 @@ import com.quantstock.qsmobile.api.UserResponse
 @Composable
 fun ExpandedUserView(
     user: UserResponse,
-    requests: List<Request>,
+    requests: List<Request>, // TODO remove hardcoding
     onElevateClick: () -> Unit,
     onDismiss: () -> Unit
 ) {

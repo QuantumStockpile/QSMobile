@@ -11,11 +11,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.quantstock.qsmobile.api.EquipmentType
+import com.quantstock.qsmobile.api.Location
 import com.quantstock.qsmobile.ui.navigation.LoginNavigation
 import com.quantstock.qsmobile.ui.screens.MainScreen
 import com.quantstock.qsmobile.ui.theme.QSMobileTheme
 import com.quantstock.qsmobile.viewmodels.AuthViewModel
+import com.quantstock.qsmobile.viewmodels.EquipmentTypeViewModel
 import com.quantstock.qsmobile.viewmodels.ItemsViewModel
+import com.quantstock.qsmobile.viewmodels.LocationViewModel
 import com.quantstock.qsmobile.viewmodels.LoginState
 import com.quantstock.qsmobile.viewmodels.RequestsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +33,8 @@ class MainActivity : ComponentActivity() {
             val authViewModel: AuthViewModel = hiltViewModel()
             val itemsViewModel: ItemsViewModel = hiltViewModel()
             val requestsViewModel: RequestsViewModel = hiltViewModel()
+            val equipmentTypeViewModel: EquipmentTypeViewModel = hiltViewModel()
+            val locationViewModel: LocationViewModel = hiltViewModel()
             val loginState by authViewModel.loginState.collectAsState()
 
             QSMobileTheme {
@@ -38,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     when(loginState) {
                         is LoginState.Success -> {
-                            MainScreen(authViewModel, itemsViewModel, requestsViewModel)
+                            MainScreen(authViewModel, itemsViewModel, requestsViewModel, equipmentTypeViewModel, locationViewModel)
                         }
                         else -> {
                             LoginNavigation(authViewModel)
